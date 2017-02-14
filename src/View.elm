@@ -9,12 +9,7 @@ import View.Svg
 root : Model -> Html msg
 root model =
     div []
-        [ case model.mouse of
-            Just position ->
-                View.Svg.root model.walls position
-
-            _ ->
-                Html.text "Initializing."
+        [ View.Svg.root model.walls model.mouse
         , copy
         ]
 

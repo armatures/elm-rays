@@ -10,16 +10,26 @@ import Types exposing (..)
 import Vectors exposing (..)
 
 
-root : Walls -> Mouse.Position -> Html msg
-root walls position =
-    svg
-        [ width "600"
-        , height "600"
-        ]
-        [ drawRays walls position
-        , drawWalls walls
-        , drawCursor position
-        ]
+root : Walls -> Maybe Mouse.Position -> Html msg
+root walls pos =
+    case pos of
+        Just position ->
+            svg
+                [ width "600"
+                , height "600"
+                ]
+                [ drawRays walls position
+                , drawWalls walls
+                , drawCursor position
+                ]
+
+        _ ->
+            svg
+                [ width "600"
+                , height "600"
+                ]
+                [ drawWalls walls
+                ]
 
 
 neighbours : List a -> List ( a, a )
