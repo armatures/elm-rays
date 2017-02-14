@@ -3,7 +3,10 @@ module State exposing (..)
 import Mouse
 import Platform.Cmd as Cmd
 import Platform.Sub as Sub
+import Random
+import Vectors exposing (Line, lineBetween)
 import Types exposing (..)
+import List
 
 
 initialModel : Model
@@ -13,12 +16,6 @@ initialModel =
         , { position = { x = 0, y = 600 }, vector = { length = 600, angle = degrees 0 } }
         , { position = { x = 0, y = 0 }, vector = { length = 600, angle = degrees 90 } }
         , { position = { x = 600, y = 0 }, vector = { length = 600, angle = degrees 90 } }
-        , { position = { x = 400, y = 400 }, vector = { length = 50, angle = degrees 315 } }
-        , { position = { x = 220, y = 400 }, vector = { length = 50, angle = degrees 290 } }
-        , { position = { x = 100, y = 480 }, vector = { length = 150, angle = degrees 250 } }
-        , { position = { x = 450, y = 200 }, vector = { length = 120, angle = degrees 235 } }
-        , { position = { x = 70, y = 50 }, vector = { length = 300, angle = degrees 70 } }
-        , { position = { x = 300, y = 150 }, vector = { length = 200, angle = degrees 30 } }
         ]
     , mouse = Nothing
     }
@@ -26,12 +23,29 @@ initialModel =
 
 initialCmd : Cmd Msg
 initialCmd =
-    Cmd.none
+    Random.generate NewWalls <| Random.list 6 randomWall
+
+
+randomWall : Random.Generator Vectors.Line
+randomWall =
+    Random.map4
+        (\x1 y1 x2 y2 ->
+            lineBetween { x = x1, y = y1 } { x = x2, y = y2 }
+        )
+        (Random.float 10 590)
+        (Random.float 10 590)
+        (Random.float 10 590)
+        (Random.float 10 590)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        NewWalls walls ->
+            ( { model | walls = model.walls ++ walls }
+            , Cmd.none
+            )
+
         Mouse mouse ->
             ( { model | mouse = Just mouse }
             , Cmd.none

@@ -16,3 +16,4 @@ type alias Model =
 
 type Msg
     = Mouse Mouse.Position
+    | NewWalls Walls
