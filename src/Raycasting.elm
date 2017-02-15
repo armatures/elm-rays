@@ -8,12 +8,13 @@ import Vectors exposing (..)
 solveRays : Position -> Walls -> List Line
 solveRays position walls =
     walls
-        |> List.concatMap (toRays position)
+        |> List.concatMap (raysToEndpoints position)
+        |> (++) (raysToIntersections position walls)
         |> List.filterMap (curtail walls)
 
 
-toRays : Position -> Line -> List Line
-toRays position line =
+raysToEndpoints : Position -> Line -> List Line
+raysToEndpoints position line =
     let
         rayToStart =
             lineBetween position (start line)
@@ -29,6 +30,28 @@ toRays position line =
         , addToAngle delta rayToEnd
         , addToAngle (delta * -1) rayToEnd
         ]
+
+
+raysToIntersections : Position -> List Line -> List Line
+raysToIntersections position lines =
+    allIntersections lines
+    |> List.map (lineBetween position)
+
+allIntersections : List Line -> List Position
+allIntersections lines =
+    case lines of
+        [] ->
+            []
+        _ :: [] ->
+            []
+        l :: ls ->
+            (List.filterMap (\line -> intersection l line) ls)
+            ++ allIntersections ls
+
+
+intersection : Line -> Line -> Maybe Position
+intersection l1 l2 =
+    Maybe.map end (intersect l1 l2)
 
 
 curtail : Walls -> Line -> Maybe Line
